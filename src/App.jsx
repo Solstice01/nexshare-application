@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 
 const PRICING = [
-  { max: 1, price: 0.5 },
-  { max: 2, price: 1.0 },
-  { max: 3, price: 1.5 },
-  { max: 6, price: 3.0 },
-  { max: 24, price: 5.0 }
+  { max: 1, price: 0.25 },
+  { max: 2, price: 0.5 },
+  { max: 3, price: 0.75 },
+  { max: 6, price: 1.75 },
+  { max: 24, price: 2.50 }
 ];
 
 function getPrice(hours) {
