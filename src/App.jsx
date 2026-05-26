@@ -343,74 +343,67 @@ export default function App() {
         fontFamily: "sans-serif"
       }}
     >
-      {/* TOP BAR */}
-      <div
+  {/* TOP BAR */}
+<div
+  style={{
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: "20px"
+  }}
+>
+  <div>
+    <h1 style={{ margin: 0 }}>
+      ⚡ NEXSHARE
+    </h1>
+
+    <p
+      style={{
+        marginTop: "5px",
+        opacity: 0.8,
+        fontSize: "14px"
+      }}
+    >
+      Family Tech Rental System
+    </p>
+
+    {!developerMode && (
+      <p
         style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center"
+          marginTop: "8px",
+          fontSize: "14px"
         }}
       >
-        <h1>⚡ NEXSHARE</h1>
-
-        <div
+        UGREEN 100W GaN Charger Status:{" "}
+        <span
           style={{
-            background: developerMode
-              ? "#5b0000"
-              : "#2a2a2a",
-            padding: "8px 12px",
-            borderRadius: "10px",
-            fontSize: "14px"
+            color: itemAvailable
+              ? "lime"
+              : "red",
+            fontWeight: "bold"
           }}
         >
-          {developerMode
-            ? "Developer Mode"
-            : "Customer Mode"}
-        </div>
-      </div>
+          {itemAvailable ? "🟢 Available" : "🔴 Borrowed"}
+        </span>
+      </p>
+    )}
+  </div>
 
-      {/* CUSTOMER MODE */}
-      {!developerMode && (
-        <>
-          <p>Family Tech Rental System</p>
-
-          <div
-            style={{
-              background: "#2a2a2a",
-              padding: "15px",
-              borderRadius: "12px",
-              marginTop: "20px"
-            }}
-          >
-            <input
-              value={borrower}
-              onChange={(e) =>
-                setBorrower(e.target.value)
-              }
-              placeholder="Borrower Name"
-              style={{
-                padding: "10px",
-                borderRadius: "8px",
-                border: "none",
-                marginRight: "10px",
-                width: "200px"
-              }}
-            />
-
-            <button
-              onClick={startBorrow}
-              style={{
-                padding: "10px 15px",
-                borderRadius: "8px",
-                border: "none",
-                cursor: "pointer"
-              }}
-            >
-              Start Borrow
-            </button>
-          </div>
-        </>
-      )}
+  <div
+    style={{
+      background: developerMode
+        ? "#5b0000"
+        : "#2a2a2a",
+      padding: "8px 12px",
+      borderRadius: "10px",
+      fontSize: "14px"
+    }}
+  >
+    {developerMode
+      ? "Developer Mode"
+      : "Customer Mode"}
+  </div>
+</div>
 
       {/* DEVELOPER MODE */}
       {developerMode && (
