@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from "react";
 
 const ADMIN_PASSWORD = "nexshare123";
-const BUILD_NUMBER = "Release V0.78 DeVo";
+const BUILD_NUMBER =
+  "Pre-release (Overhaul) V0.98 DeVo";
+
+// Toggle this manually if needed
+const SERVER_ONLINE = true;
 
 const PRICING = [
   { max: 1, price: 0.25 },
-  { max: 2, price: 0.40 },
-  { max: 3, price: 0.50 },
+  { max: 2, price: 0.4 },
+  { max: 3, price: 0.5 },
   { max: 5, price: 0.75 },
-  { max: 12, price: 1.00 },
-  { max: 24, price: 1.50 },
-  { max: 48, price: 2.50 },
-  { max: 168, price: 5.00 }
+  { max: 12, price: 1.0 },
+  { max: 24, price: 1.5 },
+  { max: 48, price: 2.5 },
+  { max: 168, price: 5.0 }
 ];
 
 function getPrice(hours, isNight = false) {
@@ -22,7 +26,7 @@ function getPrice(hours, isNight = false) {
   let total = tier.price;
 
   if (isNight) {
-    total += 0.20;
+    total += 0.2;
   }
 
   return total;
@@ -32,23 +36,32 @@ export default function App() {
   const [sessions, setSessions] = useState([]);
   const [borrower, setBorrower] = useState("");
   const [now, setNow] = useState(Date.now());
-  const [showSplash, setShowSplash] = useState(true);
 
   const [developerMode, setDeveloperMode] =
     useState(false);
 
+  const [showSplash, setShowSplash] =
+    useState(true);
+
   const [tapCount, setTapCount] = useState(0);
 
+  const [authenticated, setAuthenticated] =
+    useState(false);
+
   // Splash animation
-  useEffect(() => {
-    const splashTimer = setTimeout(() => {
+  function triggerSplash() {
+    setShowSplash(true);
+
+    setTimeout(() => {
       setShowSplash(false);
     }, 2500);
+  }
 
-    return () => clearTimeout(splashTimer);
+  useEffect(() => {
+    triggerSplash();
   }, []);
 
-  // Load saved data
+  // Load sessions
   useEffect(() => {
     const saved = localStorage.getItem(
       "nexshare_sessions"
@@ -59,7 +72,7 @@ export default function App() {
     }
   }, []);
 
-  // Save data
+  // Save sessions
   useEffect(() => {
     localStorage.setItem(
       "nexshare_sessions",
@@ -76,7 +89,7 @@ export default function App() {
     return () => clearInterval(timer);
   }, []);
 
-  // Developer unlock
+  // Unlock developer mode
   function handleBuildTap() {
     const newCount = tapCount + 1;
 
@@ -89,6 +102,9 @@ export default function App() {
 
       if (entered === ADMIN_PASSWORD) {
         setDeveloperMode(true);
+        setAuthenticated(true);
+        triggerSplash();
+
         alert("Developer Mode Enabled");
       } else {
         alert("Incorrect Password");
@@ -96,6 +112,14 @@ export default function App() {
 
       setTapCount(0);
     }
+  }
+
+  // Switch back
+  function switchToCustomerMode() {
+    setDeveloperMode(false);
+    setAuthenticated(false);
+
+    triggerSplash();
   }
 
   // Start borrow
@@ -166,13 +190,17 @@ export default function App() {
 
   // Delete log
   function deleteLog(id) {
-    const entered = prompt(
-      "Enter admin password"
-    );
+    if (!authenticated) {
+      const entered = prompt(
+        "Enter admin password"
+      );
 
-    if (entered !== ADMIN_PASSWORD) {
-      alert("Incorrect password");
-      return;
+      if (entered !== ADMIN_PASSWORD) {
+        alert("Incorrect password");
+        return;
+      }
+
+      setAuthenticated(true);
     }
 
     setSessions((prev) =>
@@ -180,7 +208,43 @@ export default function App() {
     );
   }
 
-  // Splash screen
+  // SERVER DOWN SCREEN
+  if (!SERVER_ONLINE) {
+    return (
+      <div
+        style={{
+          height: "100vh",
+          background: "#111",
+          color: "white",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          flexDirection: "column",
+          textAlign: "center",
+          padding: "20px",
+          fontFamily: "sans-serif"
+        }}
+      >
+        <div style={{ fontSize: "100px" }}>
+          ⚡
+        </div>
+
+        <h1>Server Down</h1>
+
+        <p
+          style={{
+            opacity: 0.8,
+            maxWidth: "400px"
+          }}
+        >
+          Server down due to Repairs or
+          Updates
+        </p>
+      </div>
+    );
+  }
+
+  // SPLASH SCREEN
   if (showSplash) {
     return (
       <div
@@ -192,7 +256,8 @@ export default function App() {
           alignItems: "center",
           flexDirection: "column",
           overflow: "hidden",
-          color: "white"
+          color: "white",
+          fontFamily: "sans-serif"
         }}
       >
         <div
@@ -207,8 +272,11 @@ export default function App() {
 
         <div
           style={{
-            marginTop: "20px",
-            opacity: 0.8
+            marginTop: "15px",
+            fontSize: "20px",
+            opacity: 0,
+            animation:
+              "textFade 2.5s ease forwards"
           }}
         >
           {developerMode
@@ -234,11 +302,36 @@ export default function App() {
                 opacity: 0;
               }
             }
+
+            @keyframes textFade {
+              0% {
+                opacity: 0;
+                transform: translateY(10px);
+              }
+
+              40% {
+                opacity: 1;
+                transform: translateY(0px);
+              }
+
+              100% {
+                opacity: 0;
+                transform: translateY(-10px);
+              }
+            }
           `}
         </style>
       </div>
     );
   }
+
+  // Availability
+  const activeSessions = sessions.filter(
+    (s) => !s.returned
+  );
+
+  const itemAvailable =
+    activeSessions.length === 0;
 
   return (
     <div
@@ -250,7 +343,7 @@ export default function App() {
         fontFamily: "sans-serif"
       }}
     >
-      {/* Top Bar */}
+      {/* TOP BAR */}
       <div
         style={{
           display: "flex",
@@ -276,46 +369,110 @@ export default function App() {
         </div>
       </div>
 
-      <p>Family Tech Rental System</p>
+      {/* CUSTOMER MODE */}
+      {!developerMode && (
+        <>
+          <p>Family Tech Rental System</p>
 
-      {/* Borrow Panel */}
-      <div
-        style={{
-          background: "#2a2a2a",
-          padding: "15px",
-          borderRadius: "12px",
-          marginTop: "20px"
-        }}
-      >
-        <input
-          value={borrower}
-          onChange={(e) =>
-            setBorrower(e.target.value)
-          }
-          placeholder="Borrower Name"
-          style={{
-            padding: "10px",
-            borderRadius: "8px",
-            border: "none",
-            marginRight: "10px",
-            width: "200px"
-          }}
-        />
+          <div
+            style={{
+              background: "#2a2a2a",
+              padding: "15px",
+              borderRadius: "12px",
+              marginTop: "20px"
+            }}
+          >
+            <input
+              value={borrower}
+              onChange={(e) =>
+                setBorrower(e.target.value)
+              }
+              placeholder="Borrower Name"
+              style={{
+                padding: "10px",
+                borderRadius: "8px",
+                border: "none",
+                marginRight: "10px",
+                width: "200px"
+              }}
+            />
 
-        <button
-          onClick={startBorrow}
-          style={{
-            padding: "10px 15px",
-            borderRadius: "8px",
-            border: "none",
-            cursor: "pointer"
-          }}
-        >
-          Start Borrow
-        </button>
-      </div>
+            <button
+              onClick={startBorrow}
+              style={{
+                padding: "10px 15px",
+                borderRadius: "8px",
+                border: "none",
+                cursor: "pointer"
+              }}
+            >
+              Start Borrow
+            </button>
+          </div>
+        </>
+      )}
 
-      {/* Sessions */}
+      {/* DEVELOPER MODE */}
+      {developerMode && (
+        <>
+          <div
+            style={{
+              background: "#2a2a2a",
+              padding: "20px",
+              borderRadius: "12px",
+              marginTop: "20px"
+            }}
+          >
+            <h2>🖥 Deployment / Server Details</h2>
+
+            <p>
+              <span
+                style={{
+                  color: "lime"
+                }}
+              >
+                ●
+              </span>{" "}
+              Server Online
+            </p>
+
+            <p>
+              <span
+                style={{
+                  color: itemAvailable
+                    ? "lime"
+                    : "red"
+                }}
+              >
+                ●
+              </span>{" "}
+              Item Availability:{" "}
+              {itemAvailable
+                ? "Available"
+                : "Borrowed"}
+            </p>
+
+            <p>
+              Uptime: Active Since Launch
+            </p>
+
+            <button
+              onClick={switchToCustomerMode}
+              style={{
+                marginTop: "15px",
+                padding: "10px 15px",
+                borderRadius: "8px",
+                border: "none",
+                cursor: "pointer"
+              }}
+            >
+              Switch To Customer Mode
+            </button>
+          </div>
+        </>
+      )}
+
+      {/* LOGS */}
       <div style={{ marginTop: "30px" }}>
         <h2>
           {developerMode
@@ -347,6 +504,14 @@ export default function App() {
             hours,
             isNight
           );
+
+          // Hide logs in customer mode
+          if (
+            !developerMode &&
+            session.returned
+          ) {
+            return null;
+          }
 
           return (
             <div
@@ -394,22 +559,23 @@ export default function App() {
                 </p>
               )}
 
-              {!session.returned && (
-                <button
-                  onClick={() =>
-                    returnItem(session.id)
-                  }
-                  style={{
-                    marginTop: "10px",
-                    padding: "10px 15px",
-                    borderRadius: "8px",
-                    border: "none",
-                    cursor: "pointer"
-                  }}
-                >
-                  Return Item
-                </button>
-              )}
+              {!session.returned &&
+                !developerMode && (
+                  <button
+                    onClick={() =>
+                      returnItem(session.id)
+                    }
+                    style={{
+                      marginTop: "10px",
+                      padding: "10px 15px",
+                      borderRadius: "8px",
+                      border: "none",
+                      cursor: "pointer"
+                    }}
+                  >
+                    Return Item
+                  </button>
+                )}
 
               {developerMode && (
                 <button
@@ -418,7 +584,6 @@ export default function App() {
                   }
                   style={{
                     marginTop: "10px",
-                    marginLeft: "10px",
                     padding: "10px 15px",
                     borderRadius: "8px",
                     border: "none",
@@ -435,38 +600,13 @@ export default function App() {
         })}
       </div>
 
-      {/* Pricing */}
-      <div
-        style={{
-          background: "#2a2a2a",
-          padding: "15px",
-          borderRadius: "12px",
-          marginTop: "30px"
-        }}
-      >
-        <h2>💰 Pricing</h2>
-
-        <p>1 Hour — £0.25</p>
-        <p>2 Hours — £0.40</p>
-        <p>3 Hours — £0.50</p>
-        <p>5 Hours — £0.75</p>
-        <p>12 Hours — £1.00</p>
-        <p>1 Day — £1.50</p>
-        <p>2 Days — £2.50</p>
-        <p>1 Week — £5.00</p>
-
-        <p style={{ marginTop: "10px" }}>
-          🌙 Night fee (9PM–8AM): +£0.20
-        </p>
-      </div>
-
-      {/* Build Number */}
+      {/* BUILD NUMBER */}
       <div
         onClick={handleBuildTap}
         style={{
           position: "fixed",
           bottom: "10px",
-          left: "10px",
+          right: "10px",
           fontSize: "12px",
           color: "#888",
           opacity: 0.8,
