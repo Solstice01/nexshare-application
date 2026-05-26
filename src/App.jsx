@@ -309,7 +309,7 @@ export default function App() {
     bottom: "10px",
     left: "10px",
     fontSize: "12px",
-    color: "#fff",
+    color: "#ffffffff",
     opacity: 0.8,
     userSelect: "none"
   }}
