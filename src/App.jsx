@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 
 const ADMIN_PASSWORD = "nexshare123";
-const BUILD_NUMBER =
-  "Pre-release (Overhaul) V0.98 DeVo";
 
-// Toggle this manually if needed
+const BUILD_NUMBER =
+  "Semi-Release (Overhaul) V0.99 DeVo";
+
+// Toggle manually if needed
 const SERVER_ONLINE = true;
 
 const PRICING = [
@@ -48,7 +49,7 @@ export default function App() {
   const [authenticated, setAuthenticated] =
     useState(false);
 
-  // Splash animation
+  // Splash screen
   function triggerSplash() {
     setShowSplash(true);
 
@@ -103,6 +104,7 @@ export default function App() {
       if (entered === ADMIN_PASSWORD) {
         setDeveloperMode(true);
         setAuthenticated(true);
+
         triggerSplash();
 
         alert("Developer Mode Enabled");
@@ -114,7 +116,7 @@ export default function App() {
     }
   }
 
-  // Switch back
+  // Switch back to customer mode
   function switchToCustomerMode() {
     setDeveloperMode(false);
     setAuthenticated(false);
@@ -150,7 +152,7 @@ export default function App() {
     );
 
     if (entered !== ADMIN_PASSWORD) {
-      alert("Incorrect password");
+      alert("Incorrect Password");
       return;
     }
 
@@ -196,7 +198,7 @@ export default function App() {
       );
 
       if (entered !== ADMIN_PASSWORD) {
-        alert("Incorrect password");
+        alert("Incorrect Password");
         return;
       }
 
@@ -207,6 +209,14 @@ export default function App() {
       prev.filter((s) => s.id !== id)
     );
   }
+
+  // Availability
+  const activeSessions = sessions.filter(
+    (s) => !s.returned
+  );
+
+  const itemAvailable =
+    activeSessions.length === 0;
 
   // SERVER DOWN SCREEN
   if (!SERVER_ONLINE) {
@@ -220,9 +230,9 @@ export default function App() {
           justifyContent: "center",
           alignItems: "center",
           flexDirection: "column",
+          fontFamily: "sans-serif",
           textAlign: "center",
-          padding: "20px",
-          fontFamily: "sans-serif"
+          padding: "20px"
         }}
       >
         <div style={{ fontSize: "100px" }}>
@@ -273,7 +283,7 @@ export default function App() {
         <div
           style={{
             marginTop: "15px",
-            fontSize: "20px",
+            fontSize: "22px",
             opacity: 0,
             animation:
               "textFade 2.5s ease forwards"
@@ -325,14 +335,6 @@ export default function App() {
     );
   }
 
-  // Availability
-  const activeSessions = sessions.filter(
-    (s) => !s.returned
-  );
-
-  const itemAvailable =
-    activeSessions.length === 0;
-
   return (
     <div
       style={{
@@ -343,126 +345,173 @@ export default function App() {
         fontFamily: "sans-serif"
       }}
     >
-  {/* TOP BAR */}
-<div
-  style={{
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: "20px"
-  }}
->
-  <div>
-    <h1 style={{ margin: 0 }}>
-      ⚡ NEXSHARE
-    </h1>
-
-    <p
-      style={{
-        marginTop: "5px",
-        opacity: 0.8,
-        fontSize: "14px"
-      }}
-    >
-      Family Tech Rental System
-    </p>
-
-    {!developerMode && (
-      <p
+      {/* TOP BAR */}
+      <div
         style={{
-          marginTop: "8px",
-          fontSize: "14px"
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+          marginBottom: "20px"
         }}
       >
-        UGREEN 100W GaN Charger Status:{" "}
-        <span
-          style={{
-            color: itemAvailable
-              ? "lime"
-              : "red",
-            fontWeight: "bold"
-          }}
-        >
-          {itemAvailable ? "🟢 Available" : "🔴 Borrowed"}
-        </span>
-      </p>
-    )}
-  </div>
-
-  <div
-    style={{
-      background: developerMode
-        ? "#5b0000"
-        : "#2a2a2a",
-      padding: "8px 12px",
-      borderRadius: "10px",
-      fontSize: "14px"
-    }}
-  >
-    {developerMode
-      ? "Developer Mode"
-      : "Customer Mode"}
-  </div>
-</div>
-
-      {/* DEVELOPER MODE */}
-      {developerMode && (
-        <>
-          <div
+        <div>
+          <h1
             style={{
-              background: "#2a2a2a",
-              padding: "20px",
-              borderRadius: "12px",
-              marginTop: "20px"
+              margin: 0,
+              fontSize: "48px"
             }}
           >
-            <h2>🖥 Deployment / Server Details</h2>
+            ⚡ NEXSHARE
+          </h1>
 
-            <p>
-              <span
-                style={{
-                  color: "lime"
-                }}
-              >
-                ●
-              </span>{" "}
-              Server Online
-            </p>
+          <p
+            style={{
+              marginTop: "5px",
+              opacity: 0.8,
+              fontSize: "14px"
+            }}
+          >
+            Family Tech Rental System
+          </p>
 
-            <p>
+          {!developerMode && (
+            <p
+              style={{
+                marginTop: "8px",
+                fontSize: "14px"
+              }}
+            >
+              UGREEN 100W GaN Charger
+              Status:{" "}
               <span
                 style={{
                   color: itemAvailable
                     ? "lime"
-                    : "red"
+                    : "red",
+                  fontWeight: "bold"
                 }}
               >
-                ●
-              </span>{" "}
-              Item Availability:{" "}
-              {itemAvailable
-                ? "Available"
-                : "Borrowed"}
+                {itemAvailable
+                  ? "🟢 Available"
+                  : "🔴 Borrowed"}
+              </span>
             </p>
+          )}
+        </div>
 
-            <p>
-              Uptime: Active Since Launch
-            </p>
+        <div
+          style={{
+            background: developerMode
+              ? "#5b0000"
+              : "#2a2a2a",
+            padding: "8px 12px",
+            borderRadius: "10px",
+            fontSize: "14px"
+          }}
+        >
+          {developerMode
+            ? "Developer Mode"
+            : "Customer Mode"}
+        </div>
+      </div>
+
+      {/* CUSTOMER MODE */}
+      {!developerMode && (
+        <>
+          <div
+            style={{
+              background: "#2a2a2a",
+              padding: "15px",
+              borderRadius: "12px",
+              marginTop: "20px"
+            }}
+          >
+            <input
+              value={borrower}
+              onChange={(e) =>
+                setBorrower(e.target.value)
+              }
+              placeholder="Borrower Name"
+              style={{
+                padding: "10px",
+                borderRadius: "8px",
+                border: "none",
+                marginRight: "10px",
+                width: "200px"
+              }}
+            />
 
             <button
-              onClick={switchToCustomerMode}
+              onClick={startBorrow}
               style={{
-                marginTop: "15px",
                 padding: "10px 15px",
                 borderRadius: "8px",
                 border: "none",
                 cursor: "pointer"
               }}
             >
-              Switch To Customer Mode
+              Start Borrow
             </button>
           </div>
         </>
+      )}
+
+      {/* DEVELOPER MODE */}
+      {developerMode && (
+        <div
+          style={{
+            background: "#2a2a2a",
+            padding: "20px",
+            borderRadius: "12px",
+            marginTop: "20px"
+          }}
+        >
+          <h2>🖥 Deployment / Server Details</h2>
+
+          <p>
+            <span
+              style={{
+                color: "lime"
+              }}
+            >
+              ●
+            </span>{" "}
+            Server Online
+          </p>
+
+          <p>
+            <span
+              style={{
+                color: itemAvailable
+                  ? "lime"
+                  : "red"
+              }}
+            >
+              ●
+            </span>{" "}
+            Item Availability:{" "}
+            {itemAvailable
+              ? "Available"
+              : "Borrowed"}
+          </p>
+
+          <p>
+            Uptime: Active Since Launch
+          </p>
+
+          <button
+            onClick={switchToCustomerMode}
+            style={{
+              marginTop: "15px",
+              padding: "10px 15px",
+              borderRadius: "8px",
+              border: "none",
+              cursor: "pointer"
+            }}
+          >
+            Switch To Customer Mode
+          </button>
+        </div>
       )}
 
       {/* LOGS */}
@@ -477,122 +526,127 @@ export default function App() {
           <p>No sessions yet.</p>
         )}
 
-{[...sessions]
-  .reverse()
-  .map((session) => {
-          const startTime = new Date(
-            session.start
-          );
+        {[...sessions]
+          .reverse()
+          .map((session) => {
+            const startTime = new Date(
+              session.start
+            );
 
-          const hours =
-            (now - startTime) /
-            (1000 * 60 * 60);
+            const hours =
+              (now - startTime) /
+              (1000 * 60 * 60);
 
-          const currentHour =
-            new Date().getHours();
+            const currentHour =
+              new Date().getHours();
 
-          const isNight =
-            currentHour >= 21 ||
-            currentHour < 8;
+            const isNight =
+              currentHour >= 21 ||
+              currentHour < 8;
 
-          const liveCost = getPrice(
-            hours,
-            isNight
-          );
+            const liveCost = getPrice(
+              hours,
+              isNight
+            );
 
-          // Hide logs in customer mode
-          if (
-            !developerMode &&
-            session.returned
-          ) {
-            return null;
-          }
+            // Hide returned logs in customer mode
+            if (
+              !developerMode &&
+              session.returned
+            ) {
+              return null;
+            }
 
-          return (
-            <div
-              key={session.id}
-              style={{
-                background: "#2a2a2a",
-                padding: "15px",
-                borderRadius: "12px",
-                marginTop: "15px"
-              }}
-            >
-              <p>
-                <strong>Borrower:</strong>{" "}
-                {session.borrower}
-              </p>
-
-              <p>
-                <strong>Item:</strong>{" "}
-                {session.item}
-              </p>
-
-              <p>
-                <strong>Started:</strong>{" "}
-                {startTime.toLocaleString()}
-              </p>
-
-              <p>
-                <strong>Status:</strong>{" "}
-                {session.returned
-                  ? "Returned"
-                  : "Borrowed"}
-              </p>
-
-              {!session.returned && (
+            return (
+              <div
+                key={session.id}
+                style={{
+                  background: "#2a2a2a",
+                  padding: "15px",
+                  borderRadius: "12px",
+                  marginTop: "15px"
+                }}
+              >
                 <p>
-                  <strong>Live Cost:</strong>{" "}
-                  £{liveCost.toFixed(2)}
+                  <strong>Borrower:</strong>{" "}
+                  {session.borrower}
                 </p>
-              )}
 
-              {session.returned && (
                 <p>
-                  <strong>Amount Owed:</strong>{" "}
-                  £{session.owed.toFixed(2)}
+                  <strong>Item:</strong>{" "}
+                  {session.item}
                 </p>
-              )}
 
-              {!session.returned &&
-                !developerMode && (
+                <p>
+                  <strong>Started:</strong>{" "}
+                  {startTime.toLocaleString()}
+                </p>
+
+                <p>
+                  <strong>Status:</strong>{" "}
+                  {session.returned
+                    ? "Returned"
+                    : "Borrowed"}
+                </p>
+
+                {!session.returned && (
+                  <p>
+                    <strong>Live Cost:</strong>{" "}
+                    £{liveCost.toFixed(2)}
+                  </p>
+                )}
+
+                {session.returned && (
+                  <p>
+                    <strong>Amount Owed:</strong>{" "}
+                    £
+                    {session.owed.toFixed(2)}
+                  </p>
+                )}
+
+                {!session.returned &&
+                  !developerMode && (
+                    <button
+                      onClick={() =>
+                        returnItem(
+                          session.id
+                        )
+                      }
+                      style={{
+                        marginTop: "10px",
+                        padding:
+                          "10px 15px",
+                        borderRadius: "8px",
+                        border: "none",
+                        cursor: "pointer"
+                      }}
+                    >
+                      Return Item
+                    </button>
+                  )}
+
+                {developerMode && (
                   <button
                     onClick={() =>
-                      returnItem(session.id)
+                      deleteLog(session.id)
                     }
                     style={{
                       marginTop: "10px",
-                      padding: "10px 15px",
+                      padding:
+                        "10px 15px",
                       borderRadius: "8px",
                       border: "none",
+                      background: "#5b0000",
+                      color: "white",
                       cursor: "pointer"
                     }}
                   >
-                    Return Item
+                    Delete Log
                   </button>
                 )}
-
-              {developerMode && (
-                <button
-                  onClick={() =>
-                    deleteLog(session.id)
-                  }
-                  style={{
-                    marginTop: "10px",
-                    padding: "10px 15px",
-                    borderRadius: "8px",
-                    border: "none",
-                    background: "#5b0000",
-                    color: "white",
-                    cursor: "pointer"
-                  }}
-                >
-                  Delete Log
-                </button>
-              )}
-            </div>
-          );
-        })}
+              </div>
+            );
+          })}
       </div>
 
       {/* BUILD NUMBER */}
