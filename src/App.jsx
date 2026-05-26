@@ -303,6 +303,21 @@ export default function App() {
           );
         })}
       </div>
+      <div
+  style={{
+    position: "fixed",
+    bottom: "10px",
+    left: "10px",
+    fontSize: "12px",
+    color: "#888",
+    opacity: 0.8,
+    userSelect: "none"
+  }}
+>
+  Semi-Release V0.58
+  <br />
+  DeVo
+</div>
     </div>
   );
 }
