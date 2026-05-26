@@ -10,7 +10,7 @@ const PRICING = [
   { max: 12, price: 1.00 },
   { max: 24, price: 1.50 },
   { max: 48, price: 2.50 },
-  { max: 168, price: 5.00 } // 1 week
+  { max: 168, price: 5.00 }
 ];
 
 function getPrice(hours, isNight = false) {
@@ -20,7 +20,6 @@ function getPrice(hours, isNight = false) {
 
   let total = tier.price;
 
-  // Flat night fee
   if (isNight) {
     total += 0.20;
   }
@@ -32,6 +31,16 @@ export default function App() {
   const [sessions, setSessions] = useState([]);
   const [borrower, setBorrower] = useState("");
   const [now, setNow] = useState(Date.now());
+  const [showSplash, setShowSplash] = useState(true);
+
+  // Splash screen timer
+  useEffect(() => {
+    const splashTimer = setTimeout(() => {
+      setShowSplash(false);
+    }, 2500);
+
+    return () => clearTimeout(splashTimer);
+  }, []);
 
   // Load saved sessions
   useEffect(() => {
@@ -42,7 +51,7 @@ export default function App() {
     }
   }, []);
 
-  // Save sessions automatically
+  // Save sessions
   useEffect(() => {
     localStorage.setItem(
       "nexshare_sessions",
@@ -50,7 +59,7 @@ export default function App() {
     );
   }, [sessions]);
 
-  // Live timer updates
+  // Live timer
   useEffect(() => {
     const timer = setInterval(() => {
       setNow(Date.now());
@@ -113,6 +122,53 @@ export default function App() {
     );
   }
 
+  // SPLASH SCREEN
+  if (showSplash) {
+    return (
+      <div
+        style={{
+          height: "100vh",
+          background: "#1f1f1f",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          overflow: "hidden"
+        }}
+      >
+        <div
+          style={{
+            fontSize: "120px",
+            color: "white",
+            animation: "zoomFade 2.5s ease forwards"
+          }}
+        >
+          ⚡
+        </div>
+
+        <style>
+          {`
+            @keyframes zoomFade {
+              0% {
+                transform: scale(0.5);
+                opacity: 0;
+              }
+
+              40% {
+                transform: scale(1);
+                opacity: 1;
+              }
+
+              100% {
+                transform: scale(3);
+                opacity: 0;
+              }
+            }
+          `}
+        </style>
+      </div>
+    );
+  }
+
   return (
     <div
       style={{
@@ -162,7 +218,7 @@ export default function App() {
       </div>
 
       <div style={{ marginTop: "30px" }}>
-        <h2>📜 Active & Previous Sessions</h2>
+        <h2>📜 Sessions</h2>
 
         {sessions.length === 0 && (
           <p>No sessions yet.</p>
@@ -246,30 +302,6 @@ export default function App() {
             </div>
           );
         })}
-      </div>
-
-      <div
-        style={{
-          background: "#2a2a2a",
-          padding: "15px",
-          borderRadius: "12px",
-          marginTop: "30px"
-        }}
-      >
-        <h2>💰 Pricing</h2>
-
-        <p>1 Hour — £0.25</p>
-        <p>2 Hours — £0.40</p>
-        <p>3 Hours — £0.50</p>
-        <p>5 Hours — £0.75</p>
-        <p>12 Hours — £1.00</p>
-        <p>1 Day — £1.50</p>
-        <p>2 Days — £2.50</p>
-        <p>1 Week — £5.00</p>
-
-        <p style={{ marginTop: "10px" }}>
-          🌙 Night fee (9PM–8AM): +£0.20
-        </p>
       </div>
     </div>
   );
