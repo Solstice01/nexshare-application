@@ -484,7 +484,9 @@ export default function App() {
           <p>No sessions yet.</p>
         )}
 
-        {sessions.map((session) => {
+{[...sessions]
+  .reverse()
+  .map((session) => {
           const startTime = new Date(
             session.start
           );
